@@ -75,7 +75,9 @@ const data = {
     "data": {
         "rootPermissionTitles": rootPermissionTitles,
         "rootPermission": rootPermission
-    }
+    },
+    "component": "Tree",
+    "width": 1000,
 };
 
 

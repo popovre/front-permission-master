@@ -1,6 +1,6 @@
 <template>
     <div class="modals-container">
-        <template v-for="(modal, modalKey) in modals" :key="modalKey">
+        <template v-for="(modal, index) in modals" :key="index">
             <div class="modal-wrap">
                 <div class="modal-overlay" :ref="setItemRef" @click="closeWrap($event, modalKey)"></div>
                 <div class="modal-container" :style="setWidth(modal.width)">
@@ -11,7 +11,7 @@
                         ref="customComponent"
                         :is="modal.component"
                         :modalKey="modalKey"
-                        v-bind="modal.componentProps"
+                        v-bind="modal.data"
                         :onClose="close"
                     />
                 </div>
@@ -22,10 +22,13 @@
 
 <script>
     import {mapGetters} from 'vuex'
+    import Tree from '@/components/Tree'
 
     export default {
         name: "Modals",
-        components: {},
+        components: {
+            Tree
+        },
         data() {
             return {
                 itemRefs: []
