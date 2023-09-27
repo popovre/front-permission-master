@@ -2,10 +2,10 @@
     <div class="modal-tree">
         <div class="tree">
             <div class="tree-wrapper">
-                <button type="button">
+                <button class="tree__button-back" type="button">
                     <span>Назад</span>
                 </button>
-                <h2>Менеджер</h2>
+                <h2 class="tree__title">Менеджер</h2>
                 <ul
                     class="tree__list"
                 >
@@ -33,9 +33,46 @@ export default {
 </script>
 
 <style>
+.tree__button-back {
+    position: relative;
+    border: none;
+    background-color: #FFFFFF;
+    color: #3f3ffe;
+    padding: 10px;
+    padding-left: 20px;
+    font-size: 18px;
+}
+
+.tree__button-back:active {
+    opacity: 0.6;
+}
+
+.tree__button-back::before {
+    content: "";
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.7957 18.7041C16.0071 18.9154 16.1258 19.2021 16.1258 19.501C16.1258 19.7999 16.0071 20.0865 15.7957 20.2978C15.5844 20.5092 15.2977 20.6279 14.9989 20.6279C14.7 20.6279 14.4133 20.5092 14.202 20.2978L6.70198 12.7978C6.5971 12.6933 6.51388 12.5691 6.4571 12.4324C6.40032 12.2956 6.37109 12.149 6.37109 12.001C6.37109 11.8529 6.40032 11.7063 6.4571 11.5696C6.51388 11.4328 6.5971 11.3086 6.70198 11.2041L14.202 3.7041C14.4133 3.49276 14.7 3.37402 14.9989 3.37402C15.2977 3.37402 15.5844 3.49276 15.7957 3.7041C16.0071 3.91544 16.1258 4.20209 16.1258 4.50097C16.1258 4.79986 16.0071 5.08651 15.7957 5.29785L9.09354 12L15.7957 18.7041Z' fill='%233f3ffe'/%3E%3C/svg%3E%0A");
+    background-repeat: no-repeat;
+    background-size: contain;
+    left: 5px;
+    top: calc(50% - 7px);
+}
+
 .tree__list {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
+    padding-left: 0;
 }
+
+.tree__title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    width: 200px;
+    background-color: lightgray;
+    padding-left: 30px;
+}
+
 </style>

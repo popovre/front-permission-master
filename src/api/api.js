@@ -93,8 +93,6 @@ export default class API {
         let checkPermissionString = JSON.stringify(checkPermission);
         checkPermissionString = checkPermissionString.replaceAll('"action2":0', '"action2":1');
 
-        console.log(JSON.stringify(data) === checkPermissionString);
-
         return JSON.stringify(data) === checkPermissionString;
     }
 }

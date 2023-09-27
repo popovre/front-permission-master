@@ -5,7 +5,6 @@
                 <div class="modal-overlay" :ref="setItemRef" @click="closeWrap($event, modalKey)"></div>
                 <div class="modal-container" :style="setWidth(modal.width)">
                     <div class="modal-close" @click="close(modalKey)">
-
                     </div>
                     <component
                         ref="customComponent"
