@@ -2,16 +2,18 @@
     <div class="modal-tree">
         <div class="tree">
             <div class="tree-wrapper">
-                <button class="tree__button-back" type="button">
+                <button  @click="onButtonBackClick" class="tree__button-back" type="button">
                     <span>Назад</span>
                 </button>
                 <h2 class="tree__title">Менеджер</h2>
-                <ul
-                    class="tree__list"
-                >
+                <ul class="tree__list">
                     <TreeItem
-                    :rootPermission="rootPermission"
-                    :rootPermissionTitles="rootPermissionTitles"
+                        v-for="(column, index) in columns"
+                        :key="index"
+                        :keyNumber="index"
+                        :column="column"
+                        :rootPermission="rootPermission"
+                        :rootPermissionTitles="rootPermissionTitles"
                     />
                 </ul>
             </div>
@@ -21,22 +23,59 @@
 
 <script>
 import TreeItem from "@/components/TreeItem";
+import { mapActions } from 'vuex';
 
 export default {
     name: "Tree",
     components: { TreeItem },
+    data() {
+        return {
+            columns: [],
+        };
+    },
     props: {
         rootPermission: Object,
         rootPermissionTitles: Object,
-    }
+    },
+    methods: {
+        ...mapActions(['modalClose']),
+        unlockObj(obj) {
+            let miniObj = {};
+            let arr = [];
+            for (let [key, val] of Object.entries(obj)) {
+                if (key.includes("part") && typeof val === "object") {
+                    miniObj.title = key.mainTitle || "";
+                    arr.push(val.title);
+                    if (val.items) {
+                        this.unlockObj(val.items);
+                    }
+                }
+            }
+            miniObj.names = arr;
+            Object.keys(miniObj).length
+                ? this.columns.push(miniObj)
+                : "nothing";
+        },
+        onButtonBackClick() {
+            this.modalClose();
+        }
+    },
+    mounted() {
+        this.unlockObj(this.rootPermissionTitles);
+        this.columns.reverse();
+    },
 };
 </script>
 
 <style>
+.tree-wrapper {
+    overflow: auto;
+}
+
 .tree__button-back {
     position: relative;
     border: none;
-    background-color: #FFFFFF;
+    background-color: #ffffff;
     color: #3f3ffe;
     padding: 10px;
     padding-left: 20px;
@@ -61,7 +100,6 @@ export default {
 
 .tree__list {
     display: flex;
-    flex-wrap: wrap;
     align-items: flex-start;
     padding-left: 0;
 }
@@ -74,5 +112,4 @@ export default {
     background-color: lightgray;
     padding-left: 30px;
 }
-
 </style>

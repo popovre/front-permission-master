@@ -1,21 +1,21 @@
 <template>
     <li class="tree__item">
-        <h3 class="tree__item-title">{{ rootPermissionTitles.part1.title }}</h3>
+        <h3 class="tree__item-title">{{ column.title || `Заголовок ${keyNumber}` }}</h3>
         <div @click="onItemButtonClick" class="tree__item-buttons">
-            <button  class="tree__item-button">Проекты</button>
-            <button class="tree__item-button">Настройки</button>
-            <button class="tree__item-button">Тест</button>
+            <TreeItemButton :name="name" v-for="(name, index) in column.names" :key="index"></TreeItemButton>
         </div>
     </li>
 </template>
 
 <script>
+import TreeItemButton from './TreeItemButton.vue';
+
 export default {
     name: "TreeItem",
-    components: {},
+    components: { TreeItemButton },
     props: {
-        rootPermission: Object,
-        rootPermissionTitles: Object,
+        keyNumber: Number,
+        column: Object,
     },
     methods: {
         onItemButtonClick(evt) {
@@ -23,7 +23,6 @@ export default {
         },
     },
     mounted() {
-        console.log(this.rootPermissionTitles);
     },
 };
 </script>
@@ -45,11 +44,22 @@ export default {
     }
 
     .tree__item-buttons {
+        position: relative;
         display: flex;
         flex-wrap: wrap;
         flex-direction: column;
         align-items: flex-start;
         row-gap: 4px;
+    }
+
+    .tree__item-buttons::after {
+        content: "";
+        position: absolute;
+        height: 100%;
+        width: 1px;
+        background-color: lightgrey;
+        right: 0;
+        top: 0;
     }
 
     .tree__item-button {
@@ -58,7 +68,7 @@ export default {
         padding: 8px;
         font-size: 18px;
         min-width: 187px;
-        max-width: 200px;
+        width: max-content;
         min-height: 36px;
         text-align: start;
         padding-left: 36px;
