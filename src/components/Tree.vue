@@ -2,16 +2,22 @@
     <div class="modal-tree">
         <div class="tree">
             <div class="tree-wrapper">
-                <button  @click="onButtonBackClick" class="tree__button-back" type="button">
+                <button
+                    @click="onButtonBackClick"
+                    class="tree__button-back"
+                    type="button"
+                >
                     <span>Назад</span>
                 </button>
                 <h2 class="tree__title">Менеджер</h2>
                 <ul class="tree__list">
                     <TreeItem
-                        v-for="(column, index) in columns"
+                        v-for="(column, index) in columnsTest"
+                        @sentItem="addNewColumnHandler"
                         :key="index"
                         :keyNumber="index"
                         :column="column"
+                        :items="column.items"
                         :rootPermission="rootPermission"
                         :rootPermissionTitles="rootPermissionTitles"
                     />
@@ -23,7 +29,7 @@
 
 <script>
 import TreeItem from "@/components/TreeItem";
-import { mapActions } from 'vuex';
+import { mapActions } from "vuex";
 
 export default {
     name: "Tree",
@@ -31,6 +37,7 @@ export default {
     data() {
         return {
             columns: [],
+            columnsTest: [],
         };
     },
     props: {
@@ -38,31 +45,36 @@ export default {
         rootPermissionTitles: Object,
     },
     methods: {
-        ...mapActions(['modalClose']),
-        unlockObj(obj) {
-            let miniObj = {};
-            let arr = [];
-            for (let [key, val] of Object.entries(obj)) {
-                if (key.includes("part") && typeof val === "object") {
-                    miniObj.title = key.mainTitle || "";
-                    arr.push(val.title);
-                    if (val.items) {
-                        this.unlockObj(val.items);
-                    }
-                }
-            }
-            miniObj.names = arr;
-            Object.keys(miniObj).length
-                ? this.columns.push(miniObj)
-                : "nothing";
-        },
+        ...mapActions(["modalClose"]),
         onButtonBackClick() {
             this.modalClose();
-        }
+        },
+        addNewColumnHandler(column) {
+            console.log(column);
+            this.makeNewColumn(column)
+        },
+        makeNewColumn(obj) {
+            let miniObj = {};
+            let arrNames = [];
+            let arrItems = [];
+            for (let [key, val] of Object.entries(obj)) {
+                if (key.includes("part") && typeof(val) === "object") {
+                    //TODO сделать индивидуальный айди
+                    miniObj.id = key;
+                    if (val.items) {
+                         arrItems.push(val.items)
+                    }
+                    arrNames.push(val.title);
+                }
+            }
+            miniObj.names = arrNames;
+            miniObj.items = arrItems;
+            Object.keys(miniObj).length ? this.columnsTest.push(miniObj) : "nothing";
+        },
     },
     mounted() {
-        this.unlockObj(this.rootPermissionTitles);
-        this.columns.reverse();
+        this.makeNewColumn(this.rootPermissionTitles)
+        console.log(this.columnsTest);
     },
 };
 </script>
