@@ -31,14 +31,14 @@ export default {
             this.sentItem(ind);
         },
         sentItem(ind) {
-            if (this.items.length) {
-                console.log(this.items[ind]);
+            console.log(this.items)
+            if (this.items[ind]) {
                 this.$emit("sentItem", this.items[ind]);
             }
         },
     },
     mounted() {
-        console.log(this.column);
+        // console.log(this.column);
     },
 };
 </script>

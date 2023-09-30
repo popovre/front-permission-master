@@ -50,31 +50,52 @@ export default {
             this.modalClose();
         },
         addNewColumnHandler(column) {
-            console.log(column);
-            this.makeNewColumn(column)
+            if (
+                this.columnsTest.find((value) => {
+                    return (
+                        this.findIntersect(value.ids, Object.keys(column))
+                            .length !== 0
+                    );
+                }) === undefined
+            ) {
+                this.makeNewColumn(column);
+            } else {
+                    this.columnsTest.find((value) => {
+                        console.log(this.findIntersect(value.ids, Object.keys(column)));
+                        return (
+                            this.findIntersect(value.ids, Object.keys(column))
+                                .length !== 0
+                        );
+                    })
+            }
         },
         makeNewColumn(obj) {
             let miniObj = {};
             let arrNames = [];
+            let arrIds = [];
             let arrItems = [];
             for (let [key, val] of Object.entries(obj)) {
-                if (key.includes("part") && typeof(val) === "object") {
-                    //TODO сделать индивидуальный айди
-                    miniObj.id = key;
+                if (key.includes("part") && typeof val === "object") {
                     if (val.items) {
-                         arrItems.push(val.items)
+                        arrItems.push(val.items);
                     }
+                    arrIds.push(key);
                     arrNames.push(val.title);
                 }
             }
             miniObj.names = arrNames;
+            miniObj.ids = arrIds;
             miniObj.items = arrItems;
-            Object.keys(miniObj).length ? this.columnsTest.push(miniObj) : "nothing";
+            Object.keys(miniObj).length
+                ? this.columnsTest.push(miniObj)
+                : "nothing";
+        },
+        findIntersect(arr1, arr2) {
+            return arr1.filter((val) => arr2.indexOf(val) !== -1);
         },
     },
     mounted() {
-        this.makeNewColumn(this.rootPermissionTitles)
-        console.log(this.columnsTest);
+        this.makeNewColumn(this.rootPermissionTitles);
     },
 };
 </script>
