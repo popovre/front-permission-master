@@ -23,8 +23,12 @@ export default {
 
     methods: {
         onItemButtonClick() {
-            this.$emit("onItemButtonClick", this.index);
             this.activeButton = !this.activeButton;
+            !this.activeButton ? this.$emit("addColumn", this.index) : this.$emit("deleteColumn", this.index);
+        },
+        disableButton() {
+            this.activeButton = false;
+            this.$emit("deleteColumn", this.index)
         }
     },
     mounted() {},

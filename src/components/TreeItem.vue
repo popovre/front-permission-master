@@ -5,11 +5,13 @@
         </h3>
         <div class="tree__item-buttons">
             <TreeItemButton
-                @onItemButtonClick="onItemButtonClick(index)"
+                @addColumn="addColumn(index)"
+                @deleteColumn="sentDeleteColumns"
+                v-for="(name, index) in column.names"
                 :index="index"
                 :name="name"
-                v-for="(name, index) in column.names"
                 :key="index"
+                :ref="setItemRef"
             ></TreeItemButton>
         </div>
     </li>
@@ -21,24 +23,44 @@ import TreeItemButton from "./TreeItemButton.vue";
 export default {
     name: "TreeItem",
     components: { TreeItemButton },
+    data() {
+        return {
+            itemRefs: [],
+        };
+    },
     props: {
         keyNumber: Number,
         column: Object,
         items: Array,
     },
     methods: {
-        onItemButtonClick(ind) {
+        setItemRef(el) {
+            if (el) {
+                this.itemRefs.push(el);
+            }
+        },
+        addColumn(ind) {
+            //Todo переделать реализацию активности кнопок и отрисовки колонок
             this.sentItem(ind);
         },
         sentItem(ind) {
-            console.log(this.items)
             if (this.items[ind]) {
                 this.$emit("sentItem", this.items[ind]);
             }
         },
+        sentDeleteColumns() {
+            if (this.column.ids) {
+                this.$emit("deleteColumns", this.column.ids);
+            }
+        },
+        disableButtons(ind) {
+            return this.itemRefs.slice().filter((value, index) => index !== ind)
+        }
+    },
+    beforeUpdate() {
+        this.itemRefs = [];
     },
     mounted() {
-        // console.log(this.column);
     },
 };
 </script>

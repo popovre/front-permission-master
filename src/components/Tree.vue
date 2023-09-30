@@ -14,6 +14,7 @@
                     <TreeItem
                         v-for="(column, index) in columnsTest"
                         @sentItem="addNewColumnHandler"
+                        @deleteColumns="deleteColumns"
                         :key="index"
                         :keyNumber="index"
                         :column="column"
@@ -61,7 +62,6 @@ export default {
                 this.makeNewColumn(column);
             } else {
                     this.columnsTest.find((value) => {
-                        console.log(this.findIntersect(value.ids, Object.keys(column)));
                         return (
                             this.findIntersect(value.ids, Object.keys(column))
                                 .length !== 0
@@ -90,9 +90,15 @@ export default {
                 ? this.columnsTest.push(miniObj)
                 : "nothing";
         },
+        deleteColumns(idsArray) {
+            this.columnsTest.splice(this.findColumnIndex(idsArray) + 1, this.columnsTest.length )
+        },
         findIntersect(arr1, arr2) {
             return arr1.filter((val) => arr2.indexOf(val) !== -1);
         },
+        findColumnIndex(idsArr) {
+            return this.columnsTest.findIndex((value) => value.ids === idsArr)
+        }
     },
     mounted() {
         this.makeNewColumn(this.rootPermissionTitles);
