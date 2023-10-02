@@ -5,11 +5,11 @@
         </h3>
         <div class="tree__item-buttons">
             <TreeItemButton
+                v-for="(button, index) in buttons"
                 @addColumn="addColumn(index)"
                 @deleteColumn="sentDeleteColumns"
-                v-for="(name, index) in column.names"
-                :index="index"
-                :name="name"
+                :name="button.name"
+                :state="button.state"
                 :key="index"
                 :ref="setItemRef"
             ></TreeItemButton>
@@ -25,7 +25,7 @@ export default {
     components: { TreeItemButton },
     data() {
         return {
-            itemRefs: [],
+            buttons: Array,
         };
     },
     props: {
@@ -34,12 +34,16 @@ export default {
         items: Array,
     },
     methods: {
-        setItemRef(el) {
-            if (el) {
-                this.itemRefs.push(el);
-            }
+        updateButtons(state=true) {
+            this.buttons = this.column.names.map((name, index) => {
+                return {
+                    name: name,
+                    state: state,
+                };
+            });
         },
         addColumn(ind) {
+            
             //Todo переделать реализацию активности кнопок и отрисовки колонок
             this.sentItem(ind);
         },
@@ -49,18 +53,14 @@ export default {
             }
         },
         sentDeleteColumns() {
+
             if (this.column.ids) {
                 this.$emit("deleteColumns", this.column.ids);
             }
         },
-        disableButtons(ind) {
-            return this.itemRefs.slice().filter((value, index) => index !== ind)
-        }
-    },
-    beforeUpdate() {
-        this.itemRefs = [];
     },
     mounted() {
+        this.updateButtons();
     },
 };
 </script>

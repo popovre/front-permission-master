@@ -1,8 +1,8 @@
 <template>
     <button
-        @click="onItemButtonClick()"
+        @click="onItemButtonClick"
         class="tree__item-button"
-        :class="{ 'tree__item-button--active': !activeButton }"
+        :class="{ 'tree__item-button--active': !state }"
     >
         {{ name }}
     </button>
@@ -13,23 +13,16 @@ export default {
     name: "TreeItemButton",
     props: {
         name: String,
-        index: Number,
+        state: Boolean,
     },
-    data() {
-        return {
-            activeButton: Boolean
-        }
-    },
-
     methods: {
         onItemButtonClick() {
-            this.activeButton = !this.activeButton;
-            !this.activeButton ? this.$emit("addColumn", this.index) : this.$emit("deleteColumn", this.index);
+            !this.state ? this.$emit("addColumn") : this.$emit("deleteColumn");
         },
-        disableButton() {
-            this.activeButton = false;
-            this.$emit("deleteColumn", this.index)
-        }
+        // disableButton() {
+        //     this.activeButton = false;
+        //     this.$emit("deleteColumn", this.index)
+        // }
     },
     mounted() {},
 };
