@@ -17,7 +17,7 @@ export default {
     },
     methods: {
         onItemButtonClick() {
-            !this.state ? this.$emit("addColumn") : this.$emit("deleteColumn");
+            !this.state ? this.$emit("deleteColumn") : this.$emit("addColumn");
         },
         // disableButton() {
         //     this.activeButton = false;

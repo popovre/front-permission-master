@@ -7,11 +7,10 @@
             <TreeItemButton
                 v-for="(button, index) in buttons"
                 @addColumn="addColumn(index)"
-                @deleteColumn="sentDeleteColumns"
+                @deleteColumn="sentDeleteColumns(index)"
                 :name="button.name"
                 :state="button.state"
                 :key="index"
-                :ref="setItemRef"
             ></TreeItemButton>
         </div>
     </li>
@@ -34,8 +33,8 @@ export default {
         items: Array,
     },
     methods: {
-        updateButtons(state=true) {
-            this.buttons = this.column.names.map((name, index) => {
+        createButtons(state=true) {
+            this.buttons = this.column.names.map((name) => {
                 return {
                     name: name,
                     state: state,
@@ -43,24 +42,39 @@ export default {
             });
         },
         addColumn(ind) {
-            
             //Todo переделать реализацию активности кнопок и отрисовки колонок
+            this.filterButtonsState(ind);
+            console.log(this.column.ids);
+            this.$emit("deleteColumns", this.column.ids);
             this.sentItem(ind);
         },
         sentItem(ind) {
             if (this.items[ind]) {
+                console.log(this.items[ind], ind, "<---ind");
                 this.$emit("sentItem", this.items[ind]);
+                console.log("added");
             }
         },
-        sentDeleteColumns() {
-
+        sentDeleteColumns(ind) {
+            this.filterButtonsState(ind);
+            console.log(this.column.ids);
             if (this.column.ids) {
                 this.$emit("deleteColumns", this.column.ids);
             }
         },
+        filterButtonsState(ind) {
+            this.buttons.filter((val, index) => {
+                if (index === ind) {
+                    val.state = !val.state;
+                }
+                else {
+                    val.state = true
+                }
+            })
+        }
     },
     mounted() {
-        this.updateButtons();
+        this.createButtons();
     },
 };
 </script>

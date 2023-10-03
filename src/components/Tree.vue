@@ -51,23 +51,29 @@ export default {
             this.modalClose();
         },
         addNewColumnHandler(column) {
-            if (
-                this.columnsTest.find((value) => {
-                    return (
-                        this.findIntersect(value.ids, Object.keys(column))
-                            .length !== 0
-                    );
-                }) === undefined
-            ) {
-                this.makeNewColumn(column);
-            } else {
-                    this.columnsTest.find((value) => {
-                        return (
-                            this.findIntersect(value.ids, Object.keys(column))
-                                .length !== 0
-                        );
-                    })
-            }
+            // console.log(this.columnsTest);
+            // if (
+            //     this.columnsTest.find((value) => {
+            //         console.log(value);
+            //         console.log(value.ids, 'ids', Object.keys(column), 'column');
+            //         console.log(this.findIntersect(value.ids, Object.keys(column)));
+            //         return (
+            //             this.findIntersect(value.ids, Object.keys(column))
+            //                 .length !== 0
+            //         );
+            //     }) === undefined
+            // ) {
+            //     this.makeNewColumn(column);
+            // }
+            this.makeNewColumn(column);
+            //  else {
+            //         this.columnsTest.find((value) => {
+            //             return (
+            //                 this.findIntersect(value.ids, Object.keys(column))
+            //                     .length !== 0
+            //             );
+            //         })
+            // }
         },
         makeNewColumn(obj) {
             let miniObj = {};
@@ -91,6 +97,7 @@ export default {
                 : "nothing";
         },
         deleteColumns(idsArray) {
+            // console.log(idsArray);
             this.columnsTest.splice(this.findColumnIndex(idsArray) + 1, this.columnsTest.length )
         },
         findIntersect(arr1, arr2) {
