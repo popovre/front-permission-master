@@ -23,6 +23,9 @@
                         :rootPermissionTitles="rootPermissionTitles"
                     />
                 </ul>
+                <button @click="onButtonSaveClick" class="tree__button-save" type="button">
+                    <span>Сохранить</span>
+                </button>
             </div>
         </div>
     </div>
@@ -76,6 +79,7 @@ export default {
             // }
         },
         makeNewColumn(obj) {
+            console.log('makeColumn');
             let miniObj = {};
             let arrNames = [];
             let arrIds = [];
@@ -92,12 +96,13 @@ export default {
             miniObj.names = arrNames;
             miniObj.ids = arrIds;
             miniObj.items = arrItems;
+
             Object.keys(miniObj).length
                 ? this.columnsTest.push(miniObj)
                 : "nothing";
         },
         deleteColumns(idsArray) {
-            // console.log(idsArray);
+            console.log('deleteColumns', this.findColumnIndex(idsArray));
             this.columnsTest.splice(this.findColumnIndex(idsArray) + 1, this.columnsTest.length )
         },
         findIntersect(arr1, arr2) {
@@ -114,8 +119,13 @@ export default {
 </script>
 
 <style>
+
+button {
+    cursor: pointer;
+}
+
 .tree-wrapper {
-    overflow: auto;
+    padding-bottom: 30px;
 }
 
 .tree__button-back {
@@ -125,7 +135,8 @@ export default {
     color: #3f3ffe;
     padding: 10px;
     padding-left: 20px;
-    font-size: 18px;
+    font-size: 16px;
+    margin-bottom: 24px;
 }
 
 .tree__button-back:active {
@@ -148,14 +159,38 @@ export default {
     display: flex;
     align-items: flex-start;
     padding-left: 0;
+    margin-bottom: 40px;
+    overflow: auto;
+    padding: 10px;
+    padding-bottom: 20px;
+    box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 15%);
+    border-radius: 5px;
 }
 
 .tree__title {
     margin: 0;
     font-size: 18px;
-    font-weight: 600;
-    width: 200px;
-    background-color: lightgray;
-    padding-left: 30px;
+    font-weight: 500;
+    width: fit-content;
+    background-color: #F3F5F6;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-bottom: 24px;
+}
+
+.tree__button-save {
+    border: none;
+    background-color: #162133;
+    color: #fff;
+    padding: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+    font-size: 16px;
+    margin-left: 80%;
+    border-radius: 4px;
+}
+
+.tree__button-save:active {
+    opacity: 0.6;
 }
 </style>

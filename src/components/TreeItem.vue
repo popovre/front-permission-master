@@ -33,8 +33,9 @@ export default {
         items: Array,
     },
     methods: {
-        createButtons(state=true) {
+        createButtons(state=false) {
             this.buttons = this.column.names.map((name) => {
+                console.log(name);
                 return {
                     name: name,
                     state: state,
@@ -44,20 +45,16 @@ export default {
         addColumn(ind) {
             //Todo переделать реализацию активности кнопок и отрисовки колонок
             this.filterButtonsState(ind);
-            console.log(this.column.ids);
             this.$emit("deleteColumns", this.column.ids);
             this.sentItem(ind);
         },
         sentItem(ind) {
             if (this.items[ind]) {
-                console.log(this.items[ind], ind, "<---ind");
                 this.$emit("sentItem", this.items[ind]);
-                console.log("added");
             }
         },
         sentDeleteColumns(ind) {
             this.filterButtonsState(ind);
-            console.log(this.column.ids);
             if (this.column.ids) {
                 this.$emit("deleteColumns", this.column.ids);
             }
@@ -68,7 +65,7 @@ export default {
                     val.state = !val.state;
                 }
                 else {
-                    val.state = true
+                    val.state = false
                 }
             })
         }

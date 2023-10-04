@@ -2,7 +2,7 @@
     <button
         @click="onItemButtonClick"
         class="tree__item-button"
-        :class="{ 'tree__item-button--active': !state }"
+        :class="{ 'tree__item-button--active': state }"
     >
         {{ name }}
     </button>
@@ -17,12 +17,8 @@ export default {
     },
     methods: {
         onItemButtonClick() {
-            !this.state ? this.$emit("deleteColumn") : this.$emit("addColumn");
+            this.state ? this.$emit("deleteColumn") : this.$emit("addColumn");
         },
-        // disableButton() {
-        //     this.activeButton = false;
-        //     this.$emit("deleteColumn", this.index)
-        // }
     },
     mounted() {},
 };

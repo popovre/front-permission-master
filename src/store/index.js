@@ -7,7 +7,6 @@ export default createStore({
     },
     getters: {
         modals: (state) => state.modals,
-        columns: (state) => state.columns,
     },
     mutations: {
         SET_MODAL: (state, response) => {
@@ -16,9 +15,6 @@ export default createStore({
         DELETE_MODAL: (state, response) => {
             state.modals.splice(response, 1);
         },
-        SET_COLUMN: (state, response) => {
-            state.columns.push(response);
-        },
     },
     actions: {
         modalAdd: ({ commit }, modalData) => {
@@ -26,9 +22,6 @@ export default createStore({
         },
         modalClose: ({ commit, state }, modalKey = state.modals.length - 1) => {
             commit("DELETE_MODAL", modalKey);
-        },
-        columnAdd: ({ commit }, columnData) => {
-            commit("SET_COLUMN", columnData);
         },
     },
 });
