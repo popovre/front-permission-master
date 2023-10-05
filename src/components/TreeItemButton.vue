@@ -17,7 +17,9 @@ export default {
     },
     methods: {
         onItemButtonClick() {
-            this.state ? this.$emit("deleteColumn") : this.$emit("addColumn");
+            // console.log(this.state, 'click', this.name);
+            // this.state ? this.$emit("deleteColumn") : this.$emit("addColumn");
+            this.$emit("itemButtonClick");
         },
     },
     mounted() {},

@@ -6,8 +6,7 @@
         <div class="tree__item-buttons">
             <TreeItemButton
                 v-for="(button, index) in buttons"
-                @addColumn="addColumn(index)"
-                @deleteColumn="sentDeleteColumns(index)"
+                @itemButtonClick="onItemButtonClick(index)"
                 :name="button.name"
                 :state="button.state"
                 :key="index"
@@ -28,12 +27,13 @@ export default {
         };
     },
     props: {
+        index: Number,
         keyNumber: Number,
         column: Object,
         items: Array,
     },
     methods: {
-        createButtons(state=false) {
+        createButtons(state = false) {
             this.buttons = this.column.names.map((name) => {
                 console.log(name);
                 return {
@@ -42,35 +42,45 @@ export default {
                 };
             });
         },
-        addColumn(ind) {
-            //Todo переделать реализацию активности кнопок и отрисовки колонок
+        onItemButtonClick(ind) {
             this.filterButtonsState(ind);
-            this.$emit("deleteColumns", this.column.ids);
-            this.sentItem(ind);
+            this.buttons[ind].state
+                ? this.addColumn(ind)
+                : this.deleteColumns();
         },
-        sentItem(ind) {
+        // addColumn(ind) {
+        //     //Todo переделать реализацию активности кнопок и отрисовки колонок
+        //     // this.filterButtonsState(ind);
+        //     // this.$emit("deleteColumns", this.column.ids);
+        //     this.sentItem(ind);
+        // },
+        addColumn(ind) {
             if (this.items[ind]) {
-                this.$emit("sentItem", this.items[ind]);
+                this.$emit("addColumn", [this.items[ind], this.index]);
+            } else {
+                if (this.column.ids) {
+                    this.$emit("deleteColumns", this.index);
+                }
             }
         },
-        sentDeleteColumns(ind) {
-            this.filterButtonsState(ind);
+        deleteColumns() {
+            // this.filterButtonsState(ind);
             if (this.column.ids) {
-                this.$emit("deleteColumns", this.column.ids);
+                this.$emit("deleteColumns", this.index);
             }
         },
         filterButtonsState(ind) {
             this.buttons.filter((val, index) => {
                 if (index === ind) {
                     val.state = !val.state;
+                } else {
+                    val.state = false;
                 }
-                else {
-                    val.state = false
-                }
-            })
-        }
+            });
+        },
     },
     mounted() {
+        console.log(this.column, "mounted");
         this.createButtons();
     },
 };

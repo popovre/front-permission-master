@@ -13,9 +13,10 @@
                 <ul class="tree__list">
                     <TreeItem
                         v-for="(column, index) in columnsTest"
-                        @sentItem="addNewColumnHandler"
-                        @deleteColumns="deleteColumns"
+                        @addColumn="addColumnHandler"
+                        @deleteColumns="deleteColumnsHandler"
                         :key="index"
+                        :index="index"
                         :keyNumber="index"
                         :column="column"
                         :items="column.items"
@@ -53,7 +54,7 @@ export default {
         onButtonBackClick() {
             this.modalClose();
         },
-        addNewColumnHandler(column) {
+        async addColumnHandler([column, ind]) {
             // console.log(this.columnsTest);
             // if (
             //     this.columnsTest.find((value) => {
@@ -68,7 +69,8 @@ export default {
             // ) {
             //     this.makeNewColumn(column);
             // }
-            this.makeNewColumn(column);
+            await this.deleteColumnsHandler(ind)
+            await this.makeNewColumn(column);
             //  else {
             //         this.columnsTest.find((value) => {
             //             return (
@@ -101,16 +103,17 @@ export default {
                 ? this.columnsTest.push(miniObj)
                 : "nothing";
         },
-        deleteColumns(idsArray) {
-            console.log('deleteColumns', this.findColumnIndex(idsArray));
-            this.columnsTest.splice(this.findColumnIndex(idsArray) + 1, this.columnsTest.length )
+        deleteColumnsHandler(ind) {
+            // console.log('deleteColumns', this.findColumnIndex(idsArray));
+            // this.columnsTest.splice(this.findColumnIndex(idsArray) + 1, this.columnsTest.length )
+            this.columnsTest.splice(ind + 1, this.columnsTest.length )
         },
         findIntersect(arr1, arr2) {
             return arr1.filter((val) => arr2.indexOf(val) !== -1);
         },
-        findColumnIndex(idsArr) {
-            return this.columnsTest.findIndex((value) => value.ids === idsArr)
-        }
+        // findColumnIndex(idsArr) {
+        //     return this.columnsTest.findIndex((value) => value.ids === idsArr)
+        // }
     },
     mounted() {
         this.makeNewColumn(this.rootPermissionTitles);
