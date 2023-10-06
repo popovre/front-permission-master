@@ -122,7 +122,7 @@
             background: #FFFFFF;
             box-shadow: 0 0 4px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.1);
             border-radius: 4px;
-            padding: 48px 60px;
+            padding: 20px 20px;
             box-sizing: border-box;
             position: relative;
             z-index: 4;
@@ -130,6 +130,12 @@
             max-width: 620px;
             margin: 30px auto;
             pointer-events: auto;
+        }
+
+        @media(min-width: 768px) {
+            .modal-container {
+                padding: 48px 60px;
+            }
         }
 
         .modal-close {
