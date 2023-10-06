@@ -2,20 +2,31 @@
     <div class="modal-tree">
         <div class="tree">
             <div class="tree-wrapper">
-                <button  @click="onButtonBackClick" class="tree__button-back" type="button">
+                <button
+                    @click="onButtonBackClick"
+                    class="tree__button-back"
+                    type="button"
+                >
                     <span>Назад</span>
                 </button>
                 <h2 class="tree__title">Менеджер</h2>
                 <ul class="tree__list">
                     <TreeItem
-                        v-for="(column, index) in columns"
+                        v-for="(column, index) in columnsTest"
+                        @addColumn="addColumnHandler"
+                        @deleteColumns="deleteColumnsHandler"
                         :key="index"
+                        :index="index"
                         :keyNumber="index"
                         :column="column"
+                        :items="column.items"
                         :rootPermission="rootPermission"
                         :rootPermissionTitles="rootPermissionTitles"
                     />
                 </ul>
+                <button @click="onButtonSaveClick" class="tree__button-save" type="button">
+                    <span>Сохранить</span>
+                </button>
             </div>
         </div>
     </div>
@@ -23,7 +34,7 @@
 
 <script>
 import TreeItem from "@/components/TreeItem";
-import { mapActions } from 'vuex';
+import { mapActions } from "vuex";
 
 export default {
     name: "Tree",
@@ -31,6 +42,7 @@ export default {
     data() {
         return {
             columns: [],
+            columnsTest: [],
         };
     },
     props: {
@@ -38,38 +50,67 @@ export default {
         rootPermissionTitles: Object,
     },
     methods: {
-        ...mapActions(['modalClose']),
-        unlockObj(obj) {
-            let miniObj = {};
-            let arr = [];
-            for (let [key, val] of Object.entries(obj)) {
-                if (key.includes("part") && typeof val === "object") {
-                    miniObj.title = key.mainTitle || "";
-                    arr.push(val.title);
-                    if (val.items) {
-                        this.unlockObj(val.items);
-                    }
-                }
-            }
-            miniObj.names = arr;
-            Object.keys(miniObj).length
-                ? this.columns.push(miniObj)
-                : "nothing";
-        },
+        ...mapActions(["modalClose"]),
         onButtonBackClick() {
             this.modalClose();
-        }
+        },
+        async addColumnHandler([column, ind]) {
+            if (
+                this.columnsTest.find((value) => {
+                    return (
+                        this.findIntersect(value.ids, Object.keys(column))
+                            .length !== 0
+                    );
+                }) === undefined
+            ) {
+                await this.deleteColumnsHandler(ind)
+                await this.makeNewColumn(column);
+            }
+
+        },
+        makeNewColumn(obj) {
+            let miniObj = {};
+            let arrNames = [];
+            let arrIds = [];
+            let arrItems = [];
+            for (let [key, val] of Object.entries(obj)) {
+                if (key.includes("part") && typeof val === "object") {
+                    if (val.items) {
+                        arrItems.push(val.items);
+                    }
+                    arrIds.push(key);
+                    arrNames.push(val.title);
+                }
+            }
+            miniObj.names = arrNames;
+            miniObj.ids = arrIds;
+            miniObj.items = arrItems;
+
+            Object.keys(miniObj).length
+                ? this.columnsTest.push(miniObj)
+                : "nothing";
+        },
+        deleteColumnsHandler(ind) {
+            this.columnsTest.splice(ind + 1, this.columnsTest.length )
+        },
+        findIntersect(arr1, arr2) {
+            return arr1.filter((val) => arr2.indexOf(val) !== -1);
+        },
     },
     mounted() {
-        this.unlockObj(this.rootPermissionTitles);
-        this.columns.reverse();
+        this.makeNewColumn(this.rootPermissionTitles);
     },
 };
 </script>
 
 <style>
+
+button {
+    cursor: pointer;
+}
+
 .tree-wrapper {
-    overflow: auto;
+    padding-bottom: 30px;
 }
 
 .tree__button-back {
@@ -79,7 +120,8 @@ export default {
     color: #3f3ffe;
     padding: 10px;
     padding-left: 20px;
-    font-size: 18px;
+    font-size: 16px;
+    margin-bottom: 24px;
 }
 
 .tree__button-back:active {
@@ -102,14 +144,38 @@ export default {
     display: flex;
     align-items: flex-start;
     padding-left: 0;
+    margin-bottom: 40px;
+    overflow: auto;
+    padding: 10px;
+    padding-bottom: 20px;
+    box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 15%);
+    border-radius: 5px;
 }
 
 .tree__title {
     margin: 0;
     font-size: 18px;
-    font-weight: 600;
-    width: 200px;
-    background-color: lightgray;
-    padding-left: 30px;
+    font-weight: 500;
+    width: fit-content;
+    background-color: #F3F5F6;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-bottom: 24px;
+}
+
+.tree__button-save {
+    border: none;
+    background-color: #162133;
+    color: #fff;
+    padding: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+    font-size: 16px;
+    margin-left: 80%;
+    border-radius: 4px;
+}
+
+.tree__button-save:active {
+    opacity: 0.6;
 }
 </style>
