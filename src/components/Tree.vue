@@ -55,33 +55,20 @@ export default {
             this.modalClose();
         },
         async addColumnHandler([column, ind]) {
-            // console.log(this.columnsTest);
-            // if (
-            //     this.columnsTest.find((value) => {
-            //         console.log(value);
-            //         console.log(value.ids, 'ids', Object.keys(column), 'column');
-            //         console.log(this.findIntersect(value.ids, Object.keys(column)));
-            //         return (
-            //             this.findIntersect(value.ids, Object.keys(column))
-            //                 .length !== 0
-            //         );
-            //     }) === undefined
-            // ) {
-            //     this.makeNewColumn(column);
-            // }
-            await this.deleteColumnsHandler(ind)
-            await this.makeNewColumn(column);
-            //  else {
-            //         this.columnsTest.find((value) => {
-            //             return (
-            //                 this.findIntersect(value.ids, Object.keys(column))
-            //                     .length !== 0
-            //             );
-            //         })
-            // }
+            if (
+                this.columnsTest.find((value) => {
+                    return (
+                        this.findIntersect(value.ids, Object.keys(column))
+                            .length !== 0
+                    );
+                }) === undefined
+            ) {
+                await this.deleteColumnsHandler(ind)
+                await this.makeNewColumn(column);
+            }
+
         },
         makeNewColumn(obj) {
-            console.log('makeColumn');
             let miniObj = {};
             let arrNames = [];
             let arrIds = [];
@@ -104,16 +91,11 @@ export default {
                 : "nothing";
         },
         deleteColumnsHandler(ind) {
-            // console.log('deleteColumns', this.findColumnIndex(idsArray));
-            // this.columnsTest.splice(this.findColumnIndex(idsArray) + 1, this.columnsTest.length )
             this.columnsTest.splice(ind + 1, this.columnsTest.length )
         },
         findIntersect(arr1, arr2) {
             return arr1.filter((val) => arr2.indexOf(val) !== -1);
         },
-        // findColumnIndex(idsArr) {
-        //     return this.columnsTest.findIndex((value) => value.ids === idsArr)
-        // }
     },
     mounted() {
         this.makeNewColumn(this.rootPermissionTitles);
