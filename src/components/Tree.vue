@@ -41,6 +41,8 @@
 <script>
 import TreeItem from "@/components/TreeItem";
 import { mapActions } from "vuex";
+import API from "@/api/api";
+import {cloneObject} from "@/utils/functions"
 
 export default {
     name: "Tree",
@@ -49,6 +51,7 @@ export default {
         return {
             columns: [],
             columnsTest: [],
+            rootActions: Object,
         };
     },
     props: {
@@ -136,7 +139,6 @@ export default {
             }
             columnObj.ids = arrIds;
             columnObj.buttons = arrButtons;
-
             arr.push(columnObj);
         },
         deleteColumnsHandler(currentColumnInd) {
@@ -155,11 +157,36 @@ export default {
             return columnsObj?.buttons?.findIndex(val => {
                return val.state === true
             })
+        },
+        onButtonSaveClick() {
+            this.checkStateActions();
+
+        },
+        checkStateActions() {
+            let rootActionsString = JSON.stringify(this.rootActions);
+            let checkParts = ["part21", "part112", "part11111"];
+            let checks = [];
+            checkParts.forEach(part => {
+                let column = this.columns.find(val => {
+                    return val.ids.find(internVal => internVal === part)
+                })
+                if (column.buttons[column.ids.findIndex(val => val === part)].state === true ) {
+                    checks.push(true);
+                }
+                else{
+                    checks.push(false);
+                }
+            })
+            if(checks.filter(val => val === true).length === 3) {
+                rootActionsString = JSON.parse(rootActionsString.replaceAll('"action2":0', '"action2":1'))
+            }
+            console.log(API.createPermission(rootActionsString));
         }
     },
     mounted() {
         this.addNewColumn(this.columnsTest, this.rootPermissionTitles);
         this.createStateColumns(this.columns, this.rootPermissionTitles);
+        this.rootActions = cloneObject(this.rootPermission);
     },
 };
 </script>
