@@ -31,19 +31,26 @@ export default {
         keyNumber: Number,
         column: Object,
         items: Array,
+        columns: Array,
     },
     methods: {
-        createButtons(state = false) {
-            this.buttons = this.column.names.map((name) => {
+        createButtons() {
+            let columnsObj = this.columns.find((value) => {
+                return (
+                    value.ids.join() ===
+                    this.column.ids.join()
+                );
+            });
+            this.buttons = this.column.names.map((name, ind) => {
                 return {
                     name: name,
-                    state: state,
+                    state: columnsObj.buttons?.[ind].state || false,
                 };
             });
         },
         onItemButtonClick(buttonInd) {
             this.filterButtonsState(buttonInd);
-            this.$emit("buttonClick", [this.index, buttonInd,  this.buttons[buttonInd].state])
+            this.$emit("buttonClick", [this.index, buttonInd, this.buttons[buttonInd].state])
             this.buttons[buttonInd].state
                 ? this.addColumn(buttonInd)
                 : this.deleteColumns();
@@ -63,7 +70,6 @@ export default {
             }
         },
         filterButtonsState(ind) {
-            console.log(this.buttons);
             this.buttons.filter((val, index) => {
                 if (index === ind) {
                     val.state = !val.state;

@@ -20,6 +20,7 @@
                         :index="index"
                         :keyNumber="index"
                         :column="column"
+                        :columns="columns"
                         :items="column.items"
                         :rootPermission="rootPermission"
                         :rootPermissionTitles="rootPermissionTitles"
@@ -60,7 +61,6 @@ export default {
             this.modalClose();
         },
         buttonClickHandler([currentColumnInd, buttonIndex, buttonState]) {
-            console.log(currentColumnInd, buttonIndex, buttonState);
             let columnInd = this.columns.findIndex((value) => {
                 return (
                     value.ids.join() ===
@@ -107,6 +107,17 @@ export default {
 
             return columnObj;
         },
+        addNewColumn(arr, obj) {
+            let newColumn = this.createNewColumn(obj);
+            let activeButtonInd = this.getActiveButtonInd(newColumn);
+            arr.push(newColumn);
+            if(activeButtonInd != -1 && activeButtonInd != undefined) {
+                if(newColumn.items[activeButtonInd]) {
+                    newColumn.items[activeButtonInd];
+                    this.addNewColumn(arr, newColumn.items[this.getActiveButtonInd(newColumn)])
+                }
+            }
+        },
         createStateColumns(arr, obj) {
             let columnObj = {};
             let arrIds = [];
@@ -128,9 +139,6 @@ export default {
 
             arr.push(columnObj);
         },
-        addNewColumn(arr, obj) {
-            arr.push(this.createNewColumn(obj));
-        },
         deleteColumnsHandler(currentColumnInd) {
             this.columnsTest.splice(
                 currentColumnInd + 1,
@@ -140,6 +148,14 @@ export default {
         findIntersect(arr1, arr2) {
             return arr1.filter((val) => arr2.indexOf(val) !== -1);
         },
+        getActiveButtonInd(obj){
+            let columnsObj = this.columns.find((value) => {
+                return (obj?.ids.join() === value.ids.join())
+            })
+            return columnsObj?.buttons?.findIndex(val => {
+               return val.state === true
+            })
+        }
     },
     mounted() {
         this.addNewColumn(this.columnsTest, this.rootPermissionTitles);
