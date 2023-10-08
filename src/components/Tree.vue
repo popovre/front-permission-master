@@ -15,16 +15,22 @@
                         v-for="(column, index) in columnsTest"
                         @addColumn="addColumnHandler"
                         @deleteColumns="deleteColumnsHandler"
+                        @buttonClick="buttonClickHandler"
                         :key="index"
                         :index="index"
                         :keyNumber="index"
                         :column="column"
+                        :columns="columns"
                         :items="column.items"
                         :rootPermission="rootPermission"
                         :rootPermissionTitles="rootPermissionTitles"
                     />
                 </ul>
-                <button @click="onButtonSaveClick" class="tree__button-save" type="button">
+                <button
+                    @click="onButtonSaveClick"
+                    class="tree__button-save"
+                    type="button"
+                >
                     <span>Сохранить</span>
                 </button>
             </div>
@@ -35,6 +41,8 @@
 <script>
 import TreeItem from "@/components/TreeItem";
 import { mapActions } from "vuex";
+import API from "@/api/api";
+import {cloneObject} from "@/utils/functions"
 
 export default {
     name: "Tree",
@@ -43,6 +51,7 @@ export default {
         return {
             columns: [],
             columnsTest: [],
+            rootActions: Object,
         };
     },
     props: {
@@ -54,66 +63,147 @@ export default {
         onButtonBackClick() {
             this.modalClose();
         },
-        async addColumnHandler([column, ind]) {
+        buttonClickHandler([currentColumnInd, buttonIndex, buttonState]) {
+            let columnInd = this.columns.findIndex((value) => {
+                return (
+                    value.ids.join() ===
+                    this.columnsTest[currentColumnInd].ids.join()
+                );
+            });
+            this.changeButtonState(this.columns, columnInd, buttonIndex, buttonState)
+        },
+        changeButtonState(arr, currentColumnInd, buttonIndex, buttonState) {
+            arr[currentColumnInd].buttons.forEach((val, ind, array) => {
+                array[ind] = (ind === buttonIndex? {name: val.name, state: buttonState} : {name: val.name, state: false})
+            })
+        },
+        async addColumnHandler([newColumn, currentColumnInd]) {
             if (
                 this.columnsTest.find((value) => {
                     return (
-                        this.findIntersect(value.ids, Object.keys(column))
+                        this.findIntersect(value.ids, Object.keys(newColumn))
                             .length !== 0
                     );
                 }) === undefined
             ) {
-                await this.deleteColumnsHandler(ind)
-                await this.makeNewColumn(column);
+                await this.deleteColumnsHandler(currentColumnInd);
+                await this.addNewColumn(this.columnsTest, newColumn);
             }
-
         },
-        makeNewColumn(obj) {
-            let miniObj = {};
+        createNewColumn(obj) {
+            let columnObj = {};
             let arrNames = [];
             let arrIds = [];
             let arrItems = [];
             for (let [key, val] of Object.entries(obj)) {
                 if (key.includes("part") && typeof val === "object") {
+                    arrIds.push(key);
+                    arrNames.push(val.title);
                     if (val.items) {
                         arrItems.push(val.items);
                     }
-                    arrIds.push(key);
-                    arrNames.push(val.title);
                 }
             }
-            miniObj.names = arrNames;
-            miniObj.ids = arrIds;
-            miniObj.items = arrItems;
+            columnObj.names = arrNames;
+            columnObj.ids = arrIds;
+            columnObj.items = arrItems;
 
-            Object.keys(miniObj).length
-                ? this.columnsTest.push(miniObj)
-                : "nothing";
+            return columnObj;
         },
-        deleteColumnsHandler(ind) {
-            this.columnsTest.splice(ind + 1, this.columnsTest.length )
+        addNewColumn(arr, obj) {
+            let newColumn = this.createNewColumn(obj);
+            let activeButtonInd = this.getActiveButtonInd(newColumn);
+            arr.push(newColumn);
+            if(activeButtonInd != -1 && activeButtonInd != undefined) {
+                if(newColumn.items[activeButtonInd]) {
+                    newColumn.items[activeButtonInd];
+                    this.addNewColumn(arr, newColumn.items[this.getActiveButtonInd(newColumn)])
+                }
+            }
+        },
+        createStateColumns(arr, obj) {
+            let columnObj = {};
+            let arrIds = [];
+            let arrButtons = [];
+            for (let [key, val] of Object.entries(obj)) {
+                if (key.includes("part") && typeof val === "object") {
+                    arrIds.push(key);
+                    arrButtons.push({
+                        name: val.title,
+                        state: false,
+                    });
+                    if (val.items) {
+                        this.createStateColumns(arr, val.items);
+                    }
+                }
+            }
+            columnObj.ids = arrIds;
+            columnObj.buttons = arrButtons;
+            arr.push(columnObj);
+        },
+        deleteColumnsHandler(currentColumnInd) {
+            this.columnsTest.splice(
+                currentColumnInd + 1,
+                this.columnsTest.length
+            );
         },
         findIntersect(arr1, arr2) {
             return arr1.filter((val) => arr2.indexOf(val) !== -1);
         },
+        getActiveButtonInd(obj){
+            let columnsObj = this.columns.find((value) => {
+                return (obj?.ids.join() === value.ids.join())
+            })
+            return columnsObj?.buttons?.findIndex(val => {
+               return val.state === true
+            })
+        },
+        onButtonSaveClick() {
+            this.checkStateActions();
+
+        },
+        checkStateActions() {
+            let rootActionsString = JSON.stringify(this.rootActions);
+            let checkParts = ["part21", "part112", "part11111"];
+            let checks = [];
+            checkParts.forEach(part => {
+                let column = this.columns.find(val => {
+                    return val.ids.find(internVal => internVal === part)
+                })
+                if (column.buttons[column.ids.findIndex(val => val === part)].state === true ) {
+                    checks.push(true);
+                }
+                else{
+                    checks.push(false);
+                }
+            })
+            if(checks.filter(val => val === true).length === 3) {
+                rootActionsString = JSON.parse(rootActionsString.replaceAll('"action2":0', '"action2":1'))
+            }
+            console.log(API.createPermission(rootActionsString));
+        }
     },
     mounted() {
-        this.makeNewColumn(this.rootPermissionTitles);
+        this.addNewColumn(this.columnsTest, this.rootPermissionTitles);
+        this.createStateColumns(this.columns, this.rootPermissionTitles);
+        this.rootActions = cloneObject(this.rootPermission);
     },
 };
 </script>
 
 <style>
-
 button {
     cursor: pointer;
 }
 
 .tree-wrapper {
+    display: flex;
+    flex-direction: column;
     padding-bottom: 30px;
 }
 
 .tree__button-back {
+    align-self: flex-start;
     position: relative;
     border: none;
     background-color: #ffffff;
@@ -142,7 +232,9 @@ button {
 
 .tree__list {
     display: flex;
-    align-items: flex-start;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
     padding-left: 0;
     margin-bottom: 40px;
     overflow: auto;
@@ -152,18 +244,27 @@ button {
     border-radius: 5px;
 }
 
+@media (min-width: 500px) {
+    .tree__list {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: flex-start;
+    }
+}
+
 .tree__title {
     margin: 0;
     font-size: 18px;
     font-weight: 500;
     width: fit-content;
-    background-color: #F3F5F6;
+    background-color: #f3f5f6;
     padding-left: 10px;
     padding-right: 10px;
     margin-bottom: 24px;
 }
 
 .tree__button-save {
+    align-self: flex-end;
     border: none;
     background-color: #162133;
     color: #fff;
@@ -171,7 +272,6 @@ button {
     padding-left: 15px;
     padding-right: 15px;
     font-size: 16px;
-    margin-left: 80%;
     border-radius: 4px;
 }
 

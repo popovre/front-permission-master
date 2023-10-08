@@ -31,25 +31,33 @@ export default {
         keyNumber: Number,
         column: Object,
         items: Array,
+        columns: Array,
     },
     methods: {
-        createButtons(state = false) {
-            this.buttons = this.column.names.map((name) => {
+        createButtons() {
+            let columnsObj = this.columns.find((value) => {
+                return (
+                    value.ids.join() ===
+                    this.column.ids.join()
+                );
+            });
+            this.buttons = this.column.names.map((name, ind) => {
                 return {
                     name: name,
-                    state: state,
+                    state: columnsObj.buttons?.[ind].state || false,
                 };
             });
         },
-        onItemButtonClick(ind) {
-            this.filterButtonsState(ind);
-            this.buttons[ind].state
-                ? this.addColumn(ind)
+        onItemButtonClick(buttonInd) {
+            this.filterButtonsState(buttonInd);
+            this.$emit("buttonClick", [this.index, buttonInd, this.buttons[buttonInd].state])
+            this.buttons[buttonInd].state
+                ? this.addColumn(buttonInd)
                 : this.deleteColumns();
         },
-        addColumn(ind) {
-            if (this.items[ind]) {
-                this.$emit("addColumn", [this.items[ind], this.index]);
+        addColumn(buttonInd) {
+            if (this.items[buttonInd]) {
+                this.$emit("addColumn", [this.items[buttonInd], this.index]);
             } else {
                 if (this.column.ids) {
                     this.$emit("deleteColumns", this.index);
@@ -82,7 +90,13 @@ export default {
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
-    align-items: flex-start;
+}
+
+@media(min-width: 500px) {
+    .tree__item {
+        align-items: flex-start;
+        width: fit-content;
+    }
 }
 
 .tree__item-title {
@@ -98,7 +112,6 @@ export default {
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
-    align-items: flex-start;
     row-gap: 4px;
 }
 
@@ -117,13 +130,20 @@ export default {
     border: none;
     padding: 8px;
     font-size: 18px;
-    min-width: 187px;
-    width: max-content;
+    min-width: 200px;
+    width: 100%;
     min-height: 36px;
-    text-align: start;
+    text-align: center;
     padding-left: 36px;
     padding-right: 25px;
     background-color: #ffffff;
+}
+
+@media(min-width: 500px) {
+    .tree__item-button {
+        text-align: start;
+    }
+
 }
 
 .tree__item-button::before {
